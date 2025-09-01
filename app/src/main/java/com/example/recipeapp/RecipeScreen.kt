@@ -1,6 +1,7 @@
 package com.example.recipeapp
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
@@ -25,9 +26,10 @@ import coil.compose.AsyncImage
 import com.example.recipeapp.ui.theme.MainViewModel
 
 @Composable
-fun RecipeScreen(modifier: Modifier = Modifier) {
+fun RecipeScreen(modifier: Modifier = Modifier,
+                 viewState: MainViewModel.RecipeState,
+                 navigateToDetails: (Category) -> Unit) {
     val recipeModel: MainViewModel = viewModel()
-    val viewState by recipeModel.categoriesState
 
     Box(modifier = Modifier.fillMaxSize()) {
         when {
@@ -38,24 +40,30 @@ fun RecipeScreen(modifier: Modifier = Modifier) {
                 Text("Error Occurred")
             }
             else -> {
-                CategoryScreen(viewState.list)
+                CategoryScreen(viewState.list, navigateToDetails = navigateToDetails)
             }
         }
     }
 }
 
 @Composable
-fun CategoryScreen(categories: List<Category>) {
+fun CategoryScreen(categories: List<Category>,
+                   navigateToDetails: (Category) -> Unit) {
     LazyVerticalGrid(GridCells.Fixed(2), modifier = Modifier.fillMaxSize()) {
         items(categories) { category ->
-            CategoryItem(category)
+            CategoryItem(category, navigateToDetails)
         }
     }
 }
 
 @Composable
-fun CategoryItem(item: Category) {
-    Column(modifier = Modifier.padding(8.dp).fillMaxSize(),
+fun CategoryItem(item: Category,
+                 navigateToDetails: (Category) -> Unit) {
+    Column(modifier = Modifier.padding(8.dp)
+        .fillMaxSize()
+        .clickable {
+            navigateToDetails(item)
+        },
         horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
